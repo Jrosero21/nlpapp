@@ -90,7 +90,7 @@ ORDER BY MONTH(requests.dateCreated) ASC;
   5. **Sales by Month (Formatted as Currency)**:
   SELECT 
     DATE_FORMAT(customerInvoiceDate, '%b') AS Month,
-    CONCA('$',FORMAT(SUM(customerInvoiceSubtotal),2)) AS MonthlySales
+    CONCAT('$',FORMAT(SUM(customerInvoiceSubtotal),2)) AS MonthlySales
 FROM requests
 WHERE YEAR(customerInvoiceDate) = YEAR(CURDATE())
 GROUP BY DATE_FORMAT(customerInvoiceDate, '%b'), MONTH(customerInvoiceDate)
