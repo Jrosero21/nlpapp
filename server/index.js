@@ -97,6 +97,12 @@ FROM requests
 WHERE YEAR(customerInvoiceDate) = YEAR(CURDATE())
 GROUP BY DATE_FORMAT(customerInvoiceDate, '%b'), MONTH(customerInvoiceDate)
 ORDER BY MONTH(customerInvoiceDate) ASC;
+
+6. **Open Work Orders**:
+SELECT requests.rNum, requests.owner, requests.nextActionDate, requests.currentStatus, locations.city, locations.state 
+FROM requests INNER JOIN locations ON requests.locationId = locations.locationId
+WHERE requests.currentStatus LIKE "%Ops%" OR requests.currentStatus LIKE "%Corp%";
+
   `;
 
   try {
