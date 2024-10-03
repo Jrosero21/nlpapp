@@ -113,45 +113,58 @@ function App() {
 
   // Dynamically format the axis based on the data type
   const getDynamicYAxisOptions = (key) => {
-    if (isCurrencyData(key)) {
+    // Automatically detect if the key represents GPM and format it as a percentage
+    if (key.toLowerCase().includes('gpm')) {
+      return {
+        ticks: {
+          callback: (value) => `${value.toFixed(2)}%`, // Format as percentage
+        },
+      };
+    } else if (isCurrencyData(key)) {
       return {
         ticks: {
           callback: (value) => `$${value.toLocaleString()}`, // Format as currency
         },
       };
+    } else {
+      return {
+        ticks: {
+          callback: (value) => value.toLocaleString(), // Generic number format
+        },
+      };
     }
-    return {
-      ticks: {
-        callback: (value) => value.toLocaleString(), // Generic number format
-      },
-    };
   };
-
-  const renderChart = () => {
-    if (!chartData) return null;
-
-    const chartOptions = {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (context) => {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              const value = context.raw;
-              return isCurrencyData(chartData.datasets[0].label)
-                ? `$${value.toLocaleString()}`
-                : value.toLocaleString();
-            },
+  
+  // Tooltip formatting to handle GPM or currency automatically
+  const chartOptions = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            const value = context.raw;
+            if (label.toLowerCase().includes('gpm')) {
+              return `${value.toFixed(2)}%`; // Format as percentage for GPM
+            } else if (isCurrencyData(label)) {
+              return `$${value.toLocaleString()}`; // Format as currency
+            }
+            return value.toLocaleString();
           },
         },
       },
-      scales: {
-        y: getDynamicYAxisOptions(chartData.datasets[0].label),
-      },
-    };
-
+    },
+    scales: {
+      y: getDynamicYAxisOptions(chartData.datasets[0].label),
+    },
+  };
+  
+  // Rendering the chart
+  const renderChart = () => {
+    if (!chartData) return null;
+  
     switch (chartType) {
       case 'bar':
         return <Bar data={chartData} options={chartOptions} />;
@@ -167,6 +180,8 @@ function App() {
         return <Line data={chartData} options={chartOptions} />;
     }
   };
+  
+  
 
   const Table = ({ columns, data }) => {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });

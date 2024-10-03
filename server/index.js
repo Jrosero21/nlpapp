@@ -49,6 +49,8 @@ app.post('/api/query', async (req, res) => {
     - The state field uses state acronyms, e.g., "CA" stands for "California", "NY" stands for "New York", etc.
     - "equipmentType" represents trade.
     - The dataset should **always exclude** records where "requests.currentStatus = 'Closed: Duplicate'" or "requests.workCategory = 'Test'".
+    - "(customerInvoiceSubtotal - vendorBillingAmount) / customerInvoiceSubtotal * 100" represents GPM
+    - gpm needs to be calculated using jobs in "current status" = "closed: work order finished" and represented as a percentage
 
     Example SQL queries:
   1. **Get Monthly Work Orders**:
